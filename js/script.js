@@ -16,24 +16,50 @@ if (menuButton && navLinks) {
     });
 }
 
-/* ANIMAL FILTERS */
+
+/* ANIMAL FILTERS AND SEARCH */
 
 const filterButtons = document.querySelectorAll(".filter-btn");
 const animalCards = document.querySelectorAll(".animal-card");
+const animalSearch = document.querySelector("#animalSearch");
+
+let currentFilter = "all";
+
+function updateAnimals() {
+    const query = animalSearch?.value.toLowerCase().trim() || "";
+
+    animalCards.forEach(card => {
+        const type = card.dataset.type;
+        const name = card.querySelector("h2").textContent.toLowerCase();
+
+        const matchesFilter =
+            currentFilter === "all" || type === currentFilter;
+
+        const matchesSearch = name.includes(query);
+
+        card.classList.toggle(
+            "hidden",
+            !(matchesFilter && matchesSearch)
+        );
+    });
+}
 
 filterButtons.forEach(button => {
     button.addEventListener("click", () => {
-        const filter = button.dataset.filter;
+        currentFilter = button.dataset.filter;
 
-        filterButtons.forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-
-        animalCards.forEach(card => {
-            const show = filter === "all" || card.dataset.type === filter;
-            card.classList.toggle("hidden", !show);
+        filterButtons.forEach(btn => {
+            btn.classList.toggle("active", btn === button);
         });
+
+        updateAnimals();
     });
 });
+
+if (animalSearch) {
+    animalSearch.addEventListener("input", updateAnimals);
+}
+
 
 /* LOGIN AND REGISTRATION */
 
